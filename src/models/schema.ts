@@ -6,6 +6,6 @@ export interface PropertySchema {
   type: 'variable' | 'counter';
   description: string;
   value: string;
-  equality: string;
-  equalityResolution: 'replace' | 'add';
+  labelEquality: string;
+  labelEqualityResolution: 'replace' | 'add';
 }

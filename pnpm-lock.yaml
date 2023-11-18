@@ -17,15 +17,15 @@ dependencies:
   express-xml-bodyparser:
     specifier: ^0.3.0
     version: 0.3.0
+  morph-expressions:
+    specifier: ^1.1.1
+    version: 1.1.1
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.13
   rxjs:
     specifier: ^7.8.1
     version: 7.8.1
-  string-math:
-    specifier: ^1.2.2
-    version: 1.2.2
 
 devDependencies:
   '@nestjs/cli':
@@ -3982,6 +3982,10 @@ packages:
     dependencies:
       minimist: 1.2.8
 
+  /morph-expressions@1.1.1:
+    resolution: {integrity: sha512-pnWeCsLy5nt1HbKkrBcY2QWZ/eXzwAJzHssYqOl0Mgw1AnnRW6XHdVedAshI//Wi0gyoJozL4OyRI9lOnVXXjw==}
+    dev: false
+
   /ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
 
@@ -4699,10 +4703,6 @@ packages:
       char-regex: 1.0.2
       strip-ansi: 6.0.1
     dev: true
-
-  /string-math@1.2.2:
-    resolution: {integrity: sha512-rfRZpMZbIy+0pepaW8iDCR+iW+GONxyi0jXfdyW4MgpFATH/Vlz+d3vt8UMu/a1RjA9xiejBDFayvTXzs/ROTw==}
-    dev: false
 
   /string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}

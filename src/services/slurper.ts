@@ -1,5 +1,6 @@
+import Parser from 'morph-expressions';
 import { ParsingSchema, PropertySchema } from 'src/models/schema';
-import * as stringMath from 'string-math';
+const parser = new Parser();
 
 type Property = {
   name: string;
@@ -12,6 +13,14 @@ type PropertyParser<T> = {
   name: string;
   pattern: Array<
     string | ((content: T, values: Record<string, string>) => any)
+  >;
+  equalityResolution?: PropertySchema['labelEqualityResolution'];
+  equality: Array<
+    | string
+    | ((
+        currentLabels: Record<string, string>,
+        newLabels: Record<string, string>,
+      ) => any)
   >;
 };
 
@@ -56,7 +65,7 @@ export abstract class Slurper<T = any> {
         const nm = instruction.slice(1);
         this.generatePropertyParser(nm);
         pattern.push((_, values) => values[nm]);
-        return;
+        continue;
       }
       if (instruction.startsWith('{') && instruction.endsWith('}')) {
         // if instruction is in between "{" "}" then we can assume that it is a property path
@@ -67,15 +76,44 @@ export abstract class Slurper<T = any> {
           .map((i) => i.trim())
           .filter((i) => !!i.length);
         pattern.push((curr) => this.getProperty(curr, nm));
-        return;
+        continue;
       }
       // if instruction is not a property path or a reference to another property then its a normal value, we can just push it to the pattern
       pattern.push(instruction);
     }
 
+    // normalize labelEquality by splitting them by space and removing empty strings
+    const equalityInstructions = curr.labelEquality
+      .split(' ')
+      .map((i) => i.trim())
+      .filter((i) => !!i.length);
+
+    const labelPattern: PropertyParser<T>['equality'] = [];
+
+    for (const instruction of equalityInstructions) {
+      if (instruction.startsWith('{') && instruction.endsWith('}')) {
+        // if instruction is in between "{" "}" then we can assume that it is a property path
+        // and we need to get the value of that property first before processing the current property
+        const [nm, prop] = instruction
+          .slice(1, -1)
+          .split('.')
+          .map((i) => i.trim());
+        labelPattern.push((currLabels, newLabels) =>
+          nm === 'currentLabels'
+            ? `"${currLabels[prop]}"`
+            : `"${newLabels[prop]}"`,
+        );
+        continue;
+        // if instruction is not a property path or a reference to another property then its a normal value, we can just push it to the pattern
+      }
+      labelPattern.push(instruction);
+    }
+
     this.parsers.push({
       name,
       pattern,
+      equality: labelPattern,
+      equalityResolution: curr.labelEqualityResolution,
     });
   }
 
@@ -90,7 +128,6 @@ export abstract class Slurper<T = any> {
 
   parse(content: T, labels: Record<string, string>): void {
     const values: Record<string, string> = {};
-
     this.parsers.forEach((g) => {
       const p: string[] = [];
 
@@ -103,11 +140,40 @@ export abstract class Slurper<T = any> {
       }
 
       const eq = p.join(' ');
-      values[g.name] = stringMath(eq);
-      const idx = this._properties.findIndex((p) => p.name === g.name);
-      this._properties[idx].values.push({
+      const result = parser.parseAndEval(eq);
+      values[g.name] = result;
+      console.log(eq, result);
+
+      const curr = this._properties.find((p) => p.name === g.name);
+
+      for (let index = 0; index < curr.values.length; index++) {
+        const oldLabels = curr.values[index].labels;
+        const l: string[] = [];
+
+        for (const instruction of g.equality) {
+          if (typeof instruction === 'string') {
+            l.push(instruction);
+          } else {
+            l.push(instruction(oldLabels, labels));
+          }
+        }
+        const oper = l.join(' ');
+        const operResult = parser.parseAndEval(oper);
+        console.log(oper, operResult);
+        if (!operResult) {
+          break;
+        }
+        if (g.equalityResolution === 'replace') {
+          curr.values[index].labels = labels;
+          curr.values[index].value = result;
+
+          return;
+        }
+      }
+
+      curr.values.push({
         labels,
-        value: values[g.name],
+        value: result,
       });
     });
   }

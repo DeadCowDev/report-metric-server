@@ -3,28 +3,28 @@
     "type": "variable",
     "description": "Total number of tests run",
     "value": "{testsuites.$.tests}",
-    "equality": "label.project && label.team",
-    "equalityResolution": "replace"
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "add"
   },
   "total_test_duration_ms": {
     "type": "variable",
     "description": "Total number of tests run",
     "value": "{testsuites.$.time} * 1000",
-    "equality": "label.project && label.team",
-    "equalityResolution": "replace"
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
   },
   "total_errors": {
     "type": "variable",
     "description": "Total number of tests run",
     "value": "{testsuites.$.failures}",
-    "equality": "label.project && label.team",
-    "equalityResolution": "replace"
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
   },
   "total_success": {
     "type": "variable",
     "description": "Total number of tests run",
     "value": "$total_tests - $total_errors",
-    "equality": "label.project && label.team",
-    "equalityResolution": "replace"
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
   }
 }
