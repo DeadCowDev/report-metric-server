@@ -1,0 +1,30 @@
+{
+  "total_tests": {
+    "type": "variable",
+    "description": "Total number of tests run",
+    "value": "{testsuites.$.tests}",
+    "equality": "label.project && label.team",
+    "equalityResolution": "replace"
+  },
+  "total_test_duration_ms": {
+    "type": "variable",
+    "description": "Total number of tests run",
+    "value": "{testsuites.$.time} * 1000",
+    "equality": "label.project && label.team",
+    "equalityResolution": "replace"
+  },
+  "total_errors": {
+    "type": "variable",
+    "description": "Total number of tests run",
+    "value": "{testsuites.$.failures}",
+    "equality": "label.project && label.team",
+    "equalityResolution": "replace"
+  },
+  "total_success": {
+    "type": "variable",
+    "description": "Total number of tests run",
+    "value": "$total_tests - $total_errors",
+    "equality": "label.project && label.team",
+    "equalityResolution": "replace"
+  }
+}

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SlurpJunitController } from './controller';
-import { AppService } from './app.service';
+import { JunitSlurper } from './junit-parser.service';
 
 @Module({
   imports: [],
   controllers: [SlurpJunitController],
-  providers: [AppService],
+  providers: [JunitSlurper],
 })
 export class SlurpJunitModule {}

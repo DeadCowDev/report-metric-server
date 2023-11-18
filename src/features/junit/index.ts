@@ -1,1 +1,1 @@
-export { SlurpJunitModule } from './slurp.module';
+export { SlurpJunitModule } from './module';
