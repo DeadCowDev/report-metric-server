@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Slurper } from 'src/services/slurper';
+import { Slurper } from 'src/services/parsers/slurper';
 import { ParsingSchema } from 'src/models/schema';
 import * as path from 'path';
 import * as fs from 'fs';

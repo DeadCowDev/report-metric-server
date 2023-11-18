@@ -2,7 +2,7 @@ import Parser from 'morph-expressions';
 import { ParsingSchema, PropertySchema } from 'src/models/schema';
 const parser = new Parser();
 
-type Property = {
+export type Property = {
   name: string;
   description: string;
   type: PropertySchema['type'];
