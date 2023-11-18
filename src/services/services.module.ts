@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { JunitSlurper } from './parsers';
 import { FacadeService } from './facade.service';
-import { PrometheusSerializer } from './serializers';
+import { JsonSerializer, PrometheusSerializer } from './serializers';
 
 const parsers = [JunitSlurper];
 
-const serializers = [PrometheusSerializer];
+const serializers = [PrometheusSerializer, JsonSerializer];
 
 @Module({
   imports: [],
