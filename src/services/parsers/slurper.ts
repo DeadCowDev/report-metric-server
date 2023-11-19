@@ -1,5 +1,5 @@
 import { ParsingSchema, PropertySchema } from 'src/models/schema';
-import { executeOperation } from 'src/utils';
+import { executeOperation, generateDocumentPropertyMapper } from 'src/utils';
 
 type Labels = Record<string, string>;
 
@@ -82,12 +82,10 @@ export abstract class Slurper<T = any> {
           if (instruction.startsWith('{') && instruction.endsWith('}')) {
             // if instruction is in between "{" "}" then we can assume that it is a property path
             // and we need to get the value of that property first before processing the current property
-            const nm = instruction
-              .slice(1, -1)
-              .split('.')
-              .map((i) => i.trim())
-              .filter((i) => !!i.length);
-            pattern.push((curr) => this.getProperty(curr, nm));
+
+            pattern.push(
+              generateDocumentPropertyMapper(instruction.slice(1, -1)),
+            );
             continue;
           }
           // if instruction is not a property path or a reference to another property then its a normal value, we can just push it to the pattern
@@ -123,15 +121,6 @@ export abstract class Slurper<T = any> {
       labelPattern.push(instruction);
     }
     return labelPattern;
-  }
-
-  private getProperty(content: any, propertyList: string[]) {
-    // get property value from content using property path
-    let curr = content;
-    for (const property of propertyList) {
-      curr = curr?.[property];
-    }
-    return curr ?? 0;
   }
 
   parse(content: T, labels: Labels): void {

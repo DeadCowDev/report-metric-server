@@ -17,6 +17,9 @@ dependencies:
   '@nestjs/swagger':
     specifier: ^7.1.16
     version: 7.1.16(@nestjs/common@10.2.9)(@nestjs/core@10.2.9)(reflect-metadata@0.1.13)
+  doc-path:
+    specifier: ^4.0.2
+    version: 4.0.2
   express-xml-bodyparser:
     specifier: ^0.3.0
     version: 0.3.0
@@ -2321,6 +2324,11 @@ packages:
     dependencies:
       path-type: 4.0.0
     dev: true
+
+  /doc-path@4.0.2:
+    resolution: {integrity: sha512-OqZEk7EM1aP3JpO+mq0pv1msEJWrzZVXu4q3YjEYJKc+Wt3/chac4KJdaGueK5IGemOwfptrLctG9I8xkb59qQ==}
+    engines: {node: '>=16'}
+    dev: false
 
   /doctrine@3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
