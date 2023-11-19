@@ -1,6 +1,6 @@
 import { Controller, Get, Header } from '@nestjs/common';
 import { FacadeService } from '../services';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('/metrics')
 @ApiTags('Metrics')
@@ -13,11 +13,13 @@ export class MetricsController {
     status: 200,
     description: 'Current metrics in prometheus format',
   })
+  @ApiProduces('text/plain; version=0.0.4; charset=utf-8')
   asPrometheus(): string {
     return this.facade.toPrometheus();
   }
   @Get('json')
   @Header('content-type', 'application/json')
+  @ApiProduces('application/json')
   @ApiResponse({
     status: 200,
     description: 'Current metrics in JSON format',
