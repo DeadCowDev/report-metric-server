@@ -8,7 +8,7 @@
   "total_test_duration_ms": {
     "type": "variable",
     "description": "Total tests run duration",
-    "value": "{testsuites.$.time} * 1000",
+    "value": "{Round(testsuites.$.time)} * 1000",
     "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
     "labelEqualityResolution": "replace"
   },
