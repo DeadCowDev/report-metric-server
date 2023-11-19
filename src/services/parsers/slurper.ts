@@ -1,27 +1,21 @@
-import Parser from 'morph-expressions';
 import { ParsingSchema, PropertySchema } from 'src/models/schema';
-const parser = new Parser();
+import { executeOperation } from 'src/utils';
+
+type Labels = Record<string, string>;
 
 export type Property = {
   name: string;
   description: string;
   type: PropertySchema['type'];
-  values: { value: any; labels: Record<string, string> }[];
+  values: { value: any; labels: Labels }[];
 };
 
 type PropertyParser<T> = {
+  type: PropertySchema['type'];
   name: string;
-  pattern: Array<
-    string | ((content: T, values: Record<string, string>) => any)
-  >;
+  pattern: Array<string | ((content: T, values: Labels, oldValue: any) => any)>;
   equalityResolution?: PropertySchema['labelEqualityResolution'];
-  equality: Array<
-    | string
-    | ((
-        currentLabels: Record<string, string>,
-        newLabels: Record<string, string>,
-      ) => any)
-  >;
+  equality: Array<string | ((currentLabels: Labels, newLabels: Labels) => any)>;
 };
 
 export abstract class Slurper<T = any> {
@@ -49,39 +43,62 @@ export abstract class Slurper<T = any> {
     // if property parser already exists then we don't need to generate it again
     if (this.parsers.findIndex((g) => g.name === name) >= 0) return;
     const curr = this.schema[name];
+    const pattern = this.getValuePattern(curr);
+    const labelPattern = this.getLabelPattern(curr);
 
-    // normalize instructions by splitting them by space and removing empty strings
-    const instructions = curr.value
-      .split(' ')
-      .map((i) => i.trim())
-      .filter((i) => !!i.length);
+    this.parsers.push({
+      type: curr.type,
+      name,
+      pattern,
+      equality: labelPattern,
+      equalityResolution: curr.labelEqualityResolution,
+    });
+  }
 
+  private getValuePattern(curr: PropertySchema) {
     const pattern: PropertyParser<T>['pattern'] = [];
 
-    for (const instruction of instructions) {
-      if (instruction.startsWith('$')) {
-        // if instruction starts with '$' we need to generate that property first to ensure
-        // that a value exists before processing the current property when calling parse()
-        const nm = instruction.slice(1);
-        this.generatePropertyParser(nm);
-        pattern.push((_, values) => values[nm]);
-        continue;
-      }
-      if (instruction.startsWith('{') && instruction.endsWith('}')) {
-        // if instruction is in between "{" "}" then we can assume that it is a property path
-        // and we need to get the value of that property first before processing the current property
-        const nm = instruction
-          .slice(1, -1)
-          .split('.')
+    switch (curr.type) {
+      case 'counter':
+        pattern.push(
+          (_content, _labels, oldValue) => (oldValue ? oldValue : 0) + 1,
+        );
+        break;
+      case 'variable':
+        // normalize instructions by splitting them by space and removing empty strings
+        const instructions = curr.value
+          .split(' ')
           .map((i) => i.trim())
           .filter((i) => !!i.length);
-        pattern.push((curr) => this.getProperty(curr, nm));
-        continue;
-      }
-      // if instruction is not a property path or a reference to another property then its a normal value, we can just push it to the pattern
-      pattern.push(instruction);
+        for (const instruction of instructions) {
+          if (instruction.startsWith('$')) {
+            // if instruction starts with '$' we need to generate that property first to ensure
+            // that a value exists before processing the current property when calling parse()
+            const nm = instruction.slice(1);
+            this.generatePropertyParser(nm);
+            pattern.push((_, values) => values[nm]);
+            continue;
+          }
+          if (instruction.startsWith('{') && instruction.endsWith('}')) {
+            // if instruction is in between "{" "}" then we can assume that it is a property path
+            // and we need to get the value of that property first before processing the current property
+            const nm = instruction
+              .slice(1, -1)
+              .split('.')
+              .map((i) => i.trim())
+              .filter((i) => !!i.length);
+            pattern.push((curr) => this.getProperty(curr, nm));
+            continue;
+          }
+          // if instruction is not a property path or a reference to another property then its a normal value, we can just push it to the pattern
+          pattern.push(instruction);
+        }
+        break;
     }
+    return pattern;
+  }
 
+  private getLabelPattern(curr: PropertySchema) {
     // normalize labelEquality by splitting them by space and removing empty strings
     const equalityInstructions = curr.labelEquality
       .split(' ')
@@ -92,8 +109,6 @@ export abstract class Slurper<T = any> {
 
     for (const instruction of equalityInstructions) {
       if (instruction.startsWith('{') && instruction.endsWith('}')) {
-        // if instruction is in between "{" "}" then we can assume that it is a property path
-        // and we need to get the value of that property first before processing the current property
         const [nm, prop] = instruction
           .slice(1, -1)
           .split('.')
@@ -104,17 +119,10 @@ export abstract class Slurper<T = any> {
             : `"${newLabels[prop]}"`,
         );
         continue;
-        // if instruction is not a property path or a reference to another property then its a normal value, we can just push it to the pattern
       }
       labelPattern.push(instruction);
     }
-
-    this.parsers.push({
-      name,
-      pattern,
-      equality: labelPattern,
-      equalityResolution: curr.labelEqualityResolution,
-    });
+    return labelPattern;
   }
 
   private getProperty(content: any, propertyList: string[]) {
@@ -126,45 +134,28 @@ export abstract class Slurper<T = any> {
     return curr ?? 0;
   }
 
-  parse(content: T, labels: Record<string, string>): void {
-    const values: Record<string, string> = {};
+  parse(content: T, labels: Labels): void {
+    const values: Labels = {};
     this.parsers.forEach((g) => {
-      const valueEquation = g.pattern
-        .map((instruction) =>
-          typeof instruction === 'string'
-            ? instruction
-            : instruction(content, values),
-        )
-        .join(' ');
+      const curr = this._properties.find((p) => p.name === g.name);
+      const valueIndex = this.getLabelIndex(curr, g, labels);
 
-      const result = parser.parseAndEval(valueEquation);
+      const result = executeOperation<string>(
+        g.pattern,
+        content,
+        values,
+        valueIndex >= 0 ? curr.values[valueIndex].value : undefined,
+      );
+
       values[g.name] = result;
 
-      const curr = this._properties.find((p) => p.name === g.name);
-
-      for (let index = 0; index < curr.values.length; index++) {
-        const oldLabels = curr.values[index].labels;
-
-        if (!g.equality.length) continue;
-
-        const equalityEquation = g.equality
-          .map((instruction) =>
-            typeof instruction === 'string'
-              ? instruction
-              : instruction(oldLabels, labels),
-          )
-          .join(' ');
-        const equal = parser.parseAndEval(equalityEquation);
-
-        if (!equal) {
-          continue;
-        }
+      if (valueIndex >= 0) {
         if (g.equalityResolution === 'ignore') {
           return;
         }
         if (g.equalityResolution === 'replace') {
-          curr.values[index].labels = labels;
-          curr.values[index].value = result;
+          curr.values[valueIndex].labels = labels;
+          curr.values[valueIndex].value = result;
           return;
         }
       }
@@ -174,5 +165,24 @@ export abstract class Slurper<T = any> {
         value: result,
       });
     });
+  }
+  private getLabelIndex(
+    property: Property,
+    p: PropertyParser<T>,
+    labels: Labels,
+  ): number {
+    for (let index = 0; index < property.values.length; index++) {
+      const oldLabels = property.values[index].labels;
+
+      if (!p.equality.length) continue;
+
+      const equal = executeOperation<boolean>(p.equality, oldLabels, labels);
+
+      if (!equal) {
+        continue;
+      }
+      return index;
+    }
+    return -1;
   }
 }
