@@ -7,5 +7,5 @@ export interface PropertySchema {
   description: string;
   value: string;
   labelEquality: string;
-  labelEqualityResolution: 'replace' | 'add';
+  labelEqualityResolution: 'replace' | 'add' | 'ignore';
 }

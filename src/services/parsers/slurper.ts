@@ -129,44 +129,42 @@ export abstract class Slurper<T = any> {
   parse(content: T, labels: Record<string, string>): void {
     const values: Record<string, string> = {};
     this.parsers.forEach((g) => {
-      const p: string[] = [];
+      const valueEquation = g.pattern
+        .map((instruction) =>
+          typeof instruction === 'string'
+            ? instruction
+            : instruction(content, values),
+        )
+        .join(' ');
 
-      for (const instruction of g.pattern) {
-        if (typeof instruction === 'string') {
-          p.push(instruction);
-        } else {
-          p.push(instruction(content, values));
-        }
-      }
-
-      const eq = p.join(' ');
-      const result = parser.parseAndEval(eq);
+      const result = parser.parseAndEval(valueEquation);
       values[g.name] = result;
-      console.log(eq, result);
 
       const curr = this._properties.find((p) => p.name === g.name);
 
       for (let index = 0; index < curr.values.length; index++) {
         const oldLabels = curr.values[index].labels;
-        const l: string[] = [];
 
-        for (const instruction of g.equality) {
-          if (typeof instruction === 'string') {
-            l.push(instruction);
-          } else {
-            l.push(instruction(oldLabels, labels));
-          }
+        if (!g.equality.length) continue;
+
+        const equalityEquation = g.equality
+          .map((instruction) =>
+            typeof instruction === 'string'
+              ? instruction
+              : instruction(oldLabels, labels),
+          )
+          .join(' ');
+        const equal = parser.parseAndEval(equalityEquation);
+
+        if (!equal) {
+          continue;
         }
-        const oper = l.join(' ');
-        const operResult = parser.parseAndEval(oper);
-        console.log(oper, operResult);
-        if (!operResult) {
-          break;
+        if (g.equalityResolution === 'ignore') {
+          return;
         }
         if (g.equalityResolution === 'replace') {
           curr.values[index].labels = labels;
           curr.values[index].value = result;
-
           return;
         }
       }
