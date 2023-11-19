@@ -5,6 +5,7 @@
   "author": "deadcow.enterprises",
   "private": true,
   "license": "MIT",
+  "postbuild": "cpy --cwd=src --parents '*.json' ../dist/",
   "scripts": {
     "build": "nest build",
     "start": "node dist/main",
@@ -18,6 +19,8 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "express-xml-bodyparser": "^0.3.0",
+    "morph-expressions": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },

@@ -1,0 +1,36 @@
+{
+  "total_test_runs": {
+    "type": "counter",
+    "description": "Total tests runs",
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
+  },
+  "total_test_duration_ms": {
+    "type": "variable",
+    "description": "Total tests run duration",
+    "value": "{testsuites.$.time} * 1000",
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
+  },
+  "total_tests": {
+    "type": "variable",
+    "description": "Total number of tests run",
+    "value": "{testsuites.$.tests}",
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
+  },
+  "total_errors": {
+    "type": "variable",
+    "description": "Total number of tests failing",
+    "value": "{testsuites.$.failures}",
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
+  },
+  "total_success": {
+    "type": "variable",
+    "description": "Total number of tests passing",
+    "value": "$total_tests - $total_errors",
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
+  }
+}
