@@ -7,7 +7,7 @@ import * as fs from 'fs';
 export class JunitSlurper extends Slurper {
   constructor() {
     const fileStr = fs.readFileSync(
-      path.join(__dirname, '../../junit-schema.json'),
+      path.join(__dirname, '../../schemas/junit-schema.json'),
     );
 
     const schema = JSON.parse(fileStr.toString());
