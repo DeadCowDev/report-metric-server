@@ -30,12 +30,12 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: |
-            echo "deploy=true" >> $GITHUB_ENV
+            echo "deploy=true" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   publish:
     needs: release
-    if: ${{ needs.release.outputs.deploy }}
+    if: ${{ needs.release.outputs.deploy == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
