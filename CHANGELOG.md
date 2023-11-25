@@ -1,5 +1,11 @@
 # @deadcow-enterprises/junit-prometheus-exporter
 
+## 0.0.4
+
+### Patch Changes
+
+- b313824: improve cicd
+
 ## 0.0.3
 
 ### Patch Changes
