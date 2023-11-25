@@ -10,54 +10,21 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     outputs:
-      deploy: ${{ steps.changesets.outputs.deploy }}
+      hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
+      deploy: ${{ steps.changesets.outputs.published  }}
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js 16.x
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.12
+      - uses: actions/setup-node@v3
         with:
           node-version: 18.16.0
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      - name: Install Dependencies
-        run: pnpm install
+          cache: 'pnpm'
       - name: Create Release Pull Request
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: |
-            echo "deploy=true" >> $GITHUB_OUTPUT
+          publish: pnpm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: test
-        run: echo should deploy ${{ steps.changesets.outputs.deploy }}
-  publish:
-    needs: release
-    if: ${{ needs.release.outputs.deploy }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-      - name: Get Package Version
-        id: get-package-version
-        uses: stevenbenitez/get-package-version-action@v1
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_SECRET }}
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/report-metric-server:latest
-            ${{ secrets.DOCKER_USERNAME }}/report-metric-server:${{ steps.get-package-version.outputs.version }}
