@@ -9,9 +9,6 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    outputs:
-      hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
-      deploy: ${{ steps.changesets.outputs.published  }}
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
@@ -21,7 +18,8 @@ jobs:
         with:
           node-version: 18.16.0
           cache: 'pnpm'
-      - name: Create Release Pull Request
+      - run: pnpm install --frozen-lockfile
+      - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
         with:
