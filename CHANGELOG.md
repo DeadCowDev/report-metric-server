@@ -1,5 +1,11 @@
 # @deadcow-enterprises/junit-prometheus-exporter
 
+## 0.0.18
+
+### Patch Changes
+
+- f577d41: wip
+
 ## 0.0.17
 
 ### Patch Changes
