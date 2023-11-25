@@ -10,7 +10,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     outputs:
-      releaseDocker: ${{ steps.changesets.outputs.hasChangesets == 'false' }}
+      hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   publish:
     needs: release
-    if: ${{ needs.release.outputs.releaseDocker == 'false' }}
+    if: ${{ needs.release.outputs.hasChangesets == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
