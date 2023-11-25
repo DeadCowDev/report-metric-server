@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          token: ${{ secrets.PAT }}
       - uses: pnpm/action-setup@v2
         with:
           version: 8.6.12
