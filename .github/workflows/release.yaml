@@ -38,6 +38,17 @@ jobs:
       - name: Get Package Version
         id: get-package-version
         uses: stevenbenitez/get-package-version-action@v1
+      - name: check if image tag exists
+        id: docker-image-tag-exists
+        uses: tyriis/docker-image-tag-exists@v2.0.0
+        with:
+          registry: docker.io
+          repository: ${{ secrets.DOCKER_USERNAME }}/report-metric-server
+          tag: ${{ steps.get-package-version.outputs.version }}
+      # If the image tag already exists, we don't need to build and push a new image, so we exit early.
+      - name: Exit Early If Image Tag Exists
+        if: steps.docker-image-tag-exists.outputs.tag == 'found'
+        run: exit 0
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
