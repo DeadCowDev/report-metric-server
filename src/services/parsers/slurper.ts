@@ -14,6 +14,7 @@ type PropertyParser<T> = {
   type: PropertySchema['type'];
   name: string;
   pattern: Array<string | ((content: T, values: Labels, oldValue: any) => any)>;
+  validLabels?: PropertySchema['validLabels'];
   equalityResolution?: PropertySchema['labelEqualityResolution'];
   equality: Array<string | ((currentLabels: Labels, newLabels: Labels) => any)>;
 };
@@ -50,6 +51,7 @@ export abstract class Slurper<T = any> {
       type: curr.type,
       name,
       pattern,
+      validLabels: curr.validLabels,
       equality: labelPattern,
       equalityResolution: curr.labelEqualityResolution,
     });
@@ -143,17 +145,28 @@ export abstract class Slurper<T = any> {
           return;
         }
         if (g.equalityResolution === 'replace') {
-          curr.values[valueIndex].labels = labels;
+          curr.values[valueIndex].labels = this.getValidLabels(
+            labels,
+            g.validLabels,
+          );
           curr.values[valueIndex].value = result;
           return;
         }
       }
 
       curr.values.push({
-        labels,
+        labels: this.getValidLabels(labels, g.validLabels),
         value: result,
       });
     });
+  }
+
+  private getValidLabels(labels: Labels, validLabels?: string[]) {
+    const valid: Labels = {};
+    validLabels?.forEach((l) => {
+      valid[l] = labels[l];
+    });
+    return valid;
   }
   private getLabelIndex(
     property: Property,

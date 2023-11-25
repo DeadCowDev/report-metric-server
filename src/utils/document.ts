@@ -8,6 +8,18 @@ const operationMap = {
   Flat: (content: unknown) => (Array.isArray(content) ? content.flat() : []),
   Keys: (content: unknown) => Object.keys(content || {}),
   Values: (content: unknown) => Object.values(content || {}),
+  Max: (content: unknown) => {
+    if (!Array.isArray(content)) return 0;
+    return Math.max(...content);
+  },
+  Min: (content: unknown) => {
+    if (!Array.isArray(content)) return 0;
+    return Math.min(...content);
+  },
+  Avg: (content: unknown) => {
+    if (!Array.isArray(content)) return 0;
+    return content.reduce((acc, curr) => acc + curr, 0) / content.length;
+  },
 };
 
 type Operation = (content: unknown) => any;
