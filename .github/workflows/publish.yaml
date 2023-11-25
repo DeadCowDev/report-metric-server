@@ -2,10 +2,9 @@ name: Publish Docker Image
 
 # Trigger the workflow on tag creation wth format vx.x.x
 on:
-  release:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - v*
 
 jobs:
   publish:
