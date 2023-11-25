@@ -33,6 +33,8 @@ jobs:
             echo "deploy=true" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: test
+        run: echo should deploy ${{ steps.changesets.outputs.deploy }}
   publish:
     needs: release
     if: ${{ needs.release.outputs.deploy }}
