@@ -86,7 +86,10 @@ export abstract class Slurper<T = any> {
             // and we need to get the value of that property first before processing the current property
 
             pattern.push(
-              generateDocumentPropertyMapper(instruction.slice(1, -1))
+              generateDocumentPropertyMapper(
+                instruction.slice(1, -1),
+                curr.defaultValue
+              )
             );
             continue;
           }

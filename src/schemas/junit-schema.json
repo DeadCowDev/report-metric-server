@@ -10,6 +10,7 @@
     "type": "variable",
     "description": "Total tests run duration",
     "value": "{Round(testsuites.$.time)} * 1000",
+    "defaultValue": 0,
     "validLabels": ["project", "team", "version"],
     "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
     "labelEqualityResolution": "replace"
@@ -18,6 +19,7 @@
     "type": "variable",
     "description": "Total number of tests run",
     "value": "{testsuites.$.tests}",
+    "defaultValue": 0,
     "validLabels": ["project", "team", "version"],
     "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
     "labelEqualityResolution": "replace"
@@ -26,6 +28,7 @@
     "type": "variable",
     "description": "Total number of tests failing",
     "value": "{testsuites.$.failures}",
+    "defaultValue": 0,
     "validLabels": ["project", "team", "version"],
     "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
     "labelEqualityResolution": "replace"
@@ -34,6 +37,7 @@
     "type": "variable",
     "description": "Total number of tests disabled",
     "value": "{testsuites.$.disabled}",
+    "defaultValue": 0,
     "validLabels": ["project", "team", "version"],
     "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
     "labelEqualityResolution": "replace"
@@ -42,6 +46,7 @@
     "type": "variable",
     "description": "Total number of tests passing",
     "value": "$total_tests - $total_errors",
+    "defaultValue": 0,
     "validLabels": ["project", "team", "version"],
     "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
     "labelEqualityResolution": "replace"
