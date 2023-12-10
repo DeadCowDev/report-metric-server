@@ -1,17 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { Slurper } from 'src/services/parsers/slurper';
-import { ParsingSchema } from 'src/models/schema';
-import * as path from 'path';
-import * as fs from 'fs';
-@Injectable()
+import * as fs from "fs";
+import * as path from "path";
+import { ParsingSchema } from "src/models/schema";
+import { Slurper } from "src/services/parsers/slurper";
+
 export class JunitSlurper extends Slurper {
-  constructor() {
-    const fileStr = fs.readFileSync(
-      path.join(__dirname, '../../schemas/junit-schema.json'),
-    );
+  constructor(filePath?: string) {
+    const fileLocation =
+      filePath || path.join(__dirname, "../../schemas/junit-schema.json");
+    const fileStr = fs.readFileSync(fileLocation);
 
     const schema = JSON.parse(fileStr.toString());
-
     super(schema as ParsingSchema);
   }
 }
