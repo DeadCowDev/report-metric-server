@@ -3,14 +3,22 @@
     "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
-    "esModuleInterop": true,
+    "lib": ["es5", "es6", "es7"],
+    "target": "es2017",
     "module": "commonjs",
-    "target": "ES2021",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "noImplicitAny": false,
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "skipLibCheck": true,
-    "paths": {
-      "@/*": ["src/*"]
-    }
-  }
+    "baseUrl": ".",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"]
 }

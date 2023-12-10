@@ -1,5 +1,5 @@
-import { ParsingSchema, PropertySchema } from "@/models/schema";
-import { executeOperation, generateDocumentPropertyMapper } from "@/utils";
+import { ParsingSchema, PropertySchema } from "../../models/schema";
+import { executeOperation, generateDocumentPropertyMapper } from "../../utils";
 
 type Labels = Record<string, string>;
 
@@ -131,7 +131,7 @@ export abstract class Slurper<T = any> {
   parse(content: T, labels: Labels): void {
     const values: Labels = {};
     this.parsers.forEach((g) => {
-      const curr = this._properties.find((p) => p.name === g.name);
+      const curr = this._properties.find((p) => p.name === g.name)!;
       const valueIndex = this.getLabelIndex(curr, g, labels);
 
       const result = executeOperation<string>(
