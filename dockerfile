@@ -25,4 +25,4 @@ COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 ENV PORT 80
 EXPOSE 80
 
-CMD [ "node", "dist/main.js" ]
+CMD [ "node", "dist/index.js" ]
