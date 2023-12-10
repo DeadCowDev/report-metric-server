@@ -2,6 +2,24 @@
 
 ## Description
 
+Report Metric Server receives metrics of tests and exports them as metrics.
+
+## Tech Stack
+
+- Node.js
+- Express
+
+## Supported Formats
+
+### Inputs
+
+- JUnit XML
+
+### Outputs
+
+- Prometheus
+- JSON
+
 ## Installation
 
 ```bash
@@ -17,19 +35,6 @@ $ pnpm dev
 # build
 $ pnpm build
 
-# run build output
+# run the build output
 $ pnpm start
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
