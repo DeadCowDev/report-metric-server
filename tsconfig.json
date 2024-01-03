@@ -3,7 +3,7 @@
     "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
-    "lib": ["es5", "es6", "es7"],
+    "lib": ["es5", "es6", "es7", "es2021"],
     "target": "es2017",
     "module": "commonjs",
     "moduleResolution": "node",

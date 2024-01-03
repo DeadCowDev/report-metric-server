@@ -14,6 +14,7 @@ type PropertyParser<T> = {
   type: PropertySchema["type"];
   name: string;
   pattern: Array<string | ((content: T, values: Labels, oldValue: any) => any)>;
+  extraLabels?: Labels;
   validLabels?: PropertySchema["validLabels"];
   equalityResolution?: PropertySchema["labelEqualityResolution"];
   equality: Array<string | ((currentLabels: Labels, newLabels: Labels) => any)>;
@@ -44,6 +45,30 @@ export abstract class Slurper<T = any> {
     // if property parser already exists then we don't need to generate it again
     if (this.parsers.findIndex((g) => g.name === name) >= 0) return;
     const curr = this.schema[name];
+    if (curr.type === "quantile") {
+      if (!curr.quantiles)
+        throw new Error(`Property ${name} is missing quantiles`);
+      for (const quantile of curr.quantiles) {
+        this.generatePropertyParserForSingle(
+          name,
+          {
+            ...curr,
+            value: curr.value.replaceAll("[quantile]", quantile),
+          },
+          { quantile }
+        );
+      }
+    } else {
+      this.generatePropertyParserForSingle(name, curr);
+    }
+  }
+
+  private generatePropertyParserForSingle(
+    name: string,
+    curr: PropertySchema,
+    extraLabels?: Labels
+  ) {
+    console.log("processing " + name);
     const pattern = this.getValuePattern(curr);
     const labelPattern = this.getLabelPattern(curr);
 
@@ -53,6 +78,7 @@ export abstract class Slurper<T = any> {
       pattern,
       validLabels: curr.validLabels,
       equality: labelPattern,
+      extraLabels,
       equalityResolution: curr.labelEqualityResolution,
     });
   }
@@ -67,6 +93,8 @@ export abstract class Slurper<T = any> {
         );
         break;
       case "variable":
+      case "quantile":
+        console.log("processing " + curr.value);
         // normalize instructions by splitting them by space and removing empty strings
         const instructions = curr.value
           .split(" ")
@@ -128,11 +156,14 @@ export abstract class Slurper<T = any> {
     return labelPattern;
   }
 
-  parse(content: T, labels: Labels): void {
+  parse(content: T, _labels: Labels): void {
     const values: Labels = {};
     this.parsers.forEach((g) => {
+      const labels = { ..._labels, ...g.extraLabels };
       const curr = this._properties.find((p) => p.name === g.name)!;
       const valueIndex = this.getLabelIndex(curr, g, labels);
+
+      console.log("valueIndex", valueIndex);
 
       const result = executeOperation<string>(
         g.pattern,
@@ -150,7 +181,9 @@ export abstract class Slurper<T = any> {
         if (g.equalityResolution === "replace") {
           curr.values[valueIndex].labels = this.getValidLabels(
             labels,
-            g.validLabels
+            g.validLabels?.concat(
+              g.extraLabels ? Object.keys(g.extraLabels) : []
+            )
           );
           curr.values[valueIndex].value = result;
           return;
@@ -158,7 +191,10 @@ export abstract class Slurper<T = any> {
       }
 
       curr.values.push({
-        labels: this.getValidLabels(labels, g.validLabels),
+        labels: this.getValidLabels(
+          labels,
+          g.validLabels?.concat(g.extraLabels ? Object.keys(g.extraLabels) : [])
+        ),
         value: result,
       });
     });
@@ -186,6 +222,8 @@ export abstract class Slurper<T = any> {
       if (!equal) {
         continue;
       }
+      if (p.type === "quantile" && oldLabels.quantile !== labels.quantile)
+        continue;
       return index;
     }
     return -1;

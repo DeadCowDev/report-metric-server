@@ -1,0 +1,11 @@
+{
+  "vegeta_load_test_latency_ms": {
+    "type": "quantile",
+    "description": "Load test latency in milliseconds",
+    "value": "{latencies.[quantile]} / 1000000",
+    "quantiles": ["mean", "max", "50th", "95th", "99th"],
+    "validLabels": ["project", "team", "version"],
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
+  }
+}
