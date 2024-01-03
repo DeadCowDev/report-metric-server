@@ -7,4 +7,4 @@ on:
 
 jobs:
   release:
-    uses: ./changeset.yaml
+    uses: ./.github/workflows/changeset.yaml
