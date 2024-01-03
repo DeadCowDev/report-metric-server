@@ -7,5 +7,21 @@
     "validLabels": ["project", "team", "version"],
     "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
     "labelEqualityResolution": "replace"
+  },
+  "vegeta_load_test_success_percent_ms": {
+    "type": "variable",
+    "description": "Total number of tests passing",
+    "value": "{success}",
+    "defaultValue": 0,
+    "validLabels": ["project", "team", "version"],
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
+  },
+  "vegeta_load_test_executions": {
+    "type": "counter",
+    "description": "Total tests runs",
+    "validLabels": ["project", "team", "version"],
+    "labelEquality": "{currentLabels.project} == {newLabels.project} && {newLabels.team} == {currentLabels.team}",
+    "labelEqualityResolution": "replace"
   }
 }
