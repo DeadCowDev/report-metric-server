@@ -1,5 +1,11 @@
 # @deadcow-enterprises/junit-prometheus-exporter
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- e686be3: pipeline misc
+
 ## 0.3.0-next.0
 
 ### Minor Changes
