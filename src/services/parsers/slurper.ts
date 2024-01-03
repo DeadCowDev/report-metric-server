@@ -68,7 +68,6 @@ export abstract class Slurper<T = any> {
     curr: PropertySchema,
     extraLabels?: Labels
   ) {
-    console.log("processing " + name);
     const pattern = this.getValuePattern(curr);
     const labelPattern = this.getLabelPattern(curr);
 
@@ -94,7 +93,6 @@ export abstract class Slurper<T = any> {
         break;
       case "variable":
       case "quantile":
-        console.log("processing " + curr.value);
         // normalize instructions by splitting them by space and removing empty strings
         const instructions = curr.value
           .split(" ")
@@ -162,8 +160,6 @@ export abstract class Slurper<T = any> {
       const labels = { ..._labels, ...g.extraLabels };
       const curr = this._properties.find((p) => p.name === g.name)!;
       const valueIndex = this.getLabelIndex(curr, g, labels);
-
-      console.log("valueIndex", valueIndex);
 
       const result = executeOperation<string>(
         g.pattern,
