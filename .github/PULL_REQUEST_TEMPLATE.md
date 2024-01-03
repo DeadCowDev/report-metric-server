@@ -32,6 +32,5 @@
 ### Reviewers
 
 <!-- Mention any specific team members or individuals you'd like to review this pull request. -->
-
-@reviewer1
-@reviewer2
+<!-- @reviewer1 -->
+<!-- @reviewer2 -->

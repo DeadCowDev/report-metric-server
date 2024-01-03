@@ -1,5 +1,5 @@
-import { Property } from '../parsers';
-import { Serializer } from './serializer';
+import { Property } from "../parsers";
+import { Serializer } from "./serializer";
 
 export class PrometheusSerializer extends Serializer {
   serialize(...data: Property[]): string {
@@ -12,28 +12,29 @@ export class PrometheusSerializer extends Serializer {
         } ${type}\n${p.values
           .map(
             ({ labels, value }) =>
-              `${p.name}${this.parseLabels(labels)} ${value}`,
+              `${p.name}${this.parseLabels(labels)} ${value}`
           )
-          .join('\n')}`;
+          .join("\n")}`;
       })
-      .join('\n\n');
+      .join("\n\n");
   }
 
   parseLabels(labels: Record<string, string>) {
     if (Object.keys(labels).length === 0) {
-      return '';
+      return "";
     }
     return `{${Object.keys(labels)
       .map((l) => `${l}="${labels[l]}"`)
-      .join(', ')}}`;
+      .join(", ")}}`;
   }
 
-  propertyMapToPrometheusType(p: Property['type']): string {
+  propertyMapToPrometheusType(p: Property["type"]): string {
     switch (p) {
-      case 'counter':
-        return 'counter';
-      case 'variable':
-        return 'gauge';
+      case "counter":
+        return "counter";
+      case "variable":
+      case "quantile":
+        return "gauge";
     }
   }
 }

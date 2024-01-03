@@ -3,7 +3,8 @@ export interface ParsingSchema {
 }
 
 export interface PropertySchema {
-  type: "variable" | "counter";
+  type: "variable" | "counter" | "quantile";
+  quantiles?: string[];
   description: string;
   value: string;
   validLabels?: string[];

@@ -6,4 +6,9 @@ export default function registerSlurpMiddleware(instance: Express) {
     facadeService.parseJunit(body, q);
     res.status(202).send();
   });
+  instance.post("/slurp/vegeta", ({ body, query }, res) => {
+    const q = query as Record<string, string>;
+    facadeService.parseVegeta(body, q);
+    res.status(202).send();
+  });
 }
