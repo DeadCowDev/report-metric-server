@@ -1,10 +1,10 @@
-name: Create Release
+name: Create Pre-Release
 
 on:
   push:
     branches:
-      - main
+      - release/v*
 
 jobs:
-  release:
+  pre-release:
     uses: ./changeset.yaml
