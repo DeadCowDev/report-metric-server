@@ -1,5 +1,11 @@
 # @deadcow-enterprises/junit-prometheus-exporter
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- b5cc872: add quantile type and vegeta endpoints
+
 ## 0.2.0
 
 ### Minor Changes

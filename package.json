@@ -1,6 +1,6 @@
 {
   "name": "@deadcow-enterprises/junit-prometheus-exporter",
-  "version": "0.2.0",
+  "version": "0.3.0-next.0",
   "description": "Convert test reports to metrics",
   "author": "deadcow.enterprises",
   "private": true,
