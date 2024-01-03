@@ -2,6 +2,9 @@ name: changeset release
 
 on:
   workflow_call:
+    secrets:
+      PAT:
+        required: true
 jobs:
   changeset:
     name: Create or deploy changeset release
