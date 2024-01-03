@@ -10,7 +10,9 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "postbuild": "cp -r src/schemas dist/schemas",
-    "release": "changeset tag"
+    "release": "changeset tag",
+    "mode:prerelease": "changeset pre enter next",
+    "mode:release": "changeset pre exit"
   },
   "dependencies": {
     "doc-path": "^4.0.2",
