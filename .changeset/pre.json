@@ -1,0 +1,8 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@deadcow-enterprises/junit-prometheus-exporter": "0.2.0"
+  },
+  "changesets": []
+}
