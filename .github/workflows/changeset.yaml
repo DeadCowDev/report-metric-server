@@ -1,10 +1,6 @@
 name: changeset release
 
 on:
-  push:
-    branches:
-      - release/v*
-on:
   workflow_call:
 jobs:
   changeset:
